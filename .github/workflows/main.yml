@@ -29,6 +29,11 @@ jobs:
     - name: Run the Flask app
       run: |
         nohup python app.py &
+        sleep 5  # Wait for the app to start
+
+    - name: Check if Flask app is running
+      run: |
+        curl --fail http://localhost:5000 || exit 1
 
     - name: Run tests with unittest
       run: |
