@@ -1,22 +1,15 @@
-import unittest
-import requests
+import pytest
+from app import app
 
-class FlaskAppTestCase(unittest.TestCase):
 
-    def setUp(self):
-        """Set up the base URL for testing."""
-        self.base_url = "http://localhost:5000"
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
 
-    def test_health_check(self):
-        """Check if the Flask app is running."""
-        response = requests.get(self.base_url + "/")
-        self.assertEqual(response.status_code, 200)
 
-    def test_hello_world(self):
-        """Test the home page of the Flask app."""
-        response = requests.get(self.base_url + "/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Hello, World!")
-
-if __name__ == '__main__':
-    unittest.main()
+def test_app_is_working(client):
+    response = client.get('/')
+    assert response.status_code == 200
+    assert b"Hello World!" in response.data
