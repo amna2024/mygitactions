@@ -26,24 +26,30 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Start Flask app
+    - name: Start Flask app in background
       env:
         FLASK_APP: app.py
-        FLASK_ENV: development
+        FLASK_RUN_HOST: 0.0.0.0
+        FLASK_RUN_PORT: 5000
       run: |
-        nohup flask run --host=0.0.0.0 --port=5000 &
+        nohup flask run > flask.log 2>&1 &
+
+    - name: Display Flask app logs (for debugging)
+      run: |
+        echo "Flask logs:"
+        cat flask.log
 
     - name: Wait for Flask app to be ready
       run: |
-        for i in {1..10}; do
+        for i in {1..20}; do
           if curl -s http://localhost:5000/; then
             echo "App is ready!"
             break
           fi
-          echo "Waiting for app..."
+          echo "Waiting for app to start..."
           sleep 2
         done
 
-    - name: Run tests with unittest
+    - name: Run tests
       run: |
         python test.py
