@@ -1,4 +1,7 @@
 import pytest
+# test/__init__.py
+import sys
+sys.path.append('/vagrant/test_pytest/mypkg')
 from app import app
 
 
